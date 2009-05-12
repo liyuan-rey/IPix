@@ -1,0 +1,26 @@
+HKCR
+{
+	IPix.IPixCOM.1 = s 'IPixCOM Class'
+	{
+		CLSID = s '{6627BC30-9E06-4907-9918-6289FBD8916C}'
+	}
+	IPix.IPixCOM = s 'IPixCOM Class'
+	{
+		CLSID = s '{6627BC30-9E06-4907-9918-6289FBD8916C}'
+		CurVer = s 'IPix.IPixCOM.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {6627BC30-9E06-4907-9918-6289FBD8916C} = s 'IPixCOM Class'
+		{
+			ProgID = s 'IPix.IPixCOM.1'
+			VersionIndependentProgID = s 'IPix.IPixCOM'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			'TypeLib' = s '{CD2FB378-90C7-4A29-82AD-35D2A703CDB5}'
+		}
+	}
+}

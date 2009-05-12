@@ -1,0 +1,38 @@
+// IPix.idl : IDL source for IPix.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (IPix.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+	[
+		object,
+		uuid(D8A544C7-A38A-44F4-A13C-9923B79405F6),
+		dual,
+		helpstring("IIPixCOM Interface"),
+		pointer_default(unique)
+	]
+	interface IIPixCOM : IDispatch
+	{
+	};
+
+[
+	uuid(CD2FB378-90C7-4A29-82AD-35D2A703CDB5),
+	version(1.0),
+	helpstring("IPix 1.0 Type Library")
+]
+library IPIXLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(6627BC30-9E06-4907-9918-6289FBD8916C),
+		helpstring("IPixCOM Class")
+	]
+	coclass IPixCOM
+	{
+		[default] interface IIPixCOM;
+	};
+};

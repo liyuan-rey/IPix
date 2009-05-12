@@ -1,0 +1,11 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\Extensions\{6627BC30-9E06-4907-9918-6289FBD8916C}]
+"CLSID"="{1FBA04EE-3024-11d2-8F1F-0000F87ABD16}"
+"ClsidExtension"="{6627BC30-9E06-4907-9918-6289FBD8916C}"
+"ButtonText"="IP 精灵"
+"HotIcon"="d:\\temp\\IPix.dll,201"
+"Icon"="d:\\temp\\IPix.dll,207"
+"MenuText"="&IP 精灵"
+"MenuStatusBar"="解析当前网络地址, 并写入本地 HOST 文件!"
+
