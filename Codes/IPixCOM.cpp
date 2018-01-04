@@ -7,80 +7,81 @@
 // CIPixCOM
 
 // IOleCommandTarget
-	STDMETHODIMP CIPixCOM::QueryStatus(
-			const GUID *pguidCmdGroup,
-			ULONG cCmds, OLECMD prgCmds[],
-			OLECMDTEXT *pCmdText)
+STDMETHODIMP CIPixCOM::QueryStatus(
+	const GUID *pguidCmdGroup,
+	ULONG cCmds, OLECMD prgCmds[],
+	OLECMDTEXT *pCmdText)
+{
+	if (!prgCmds)
+		return E_POINTER;
+
+	for (ULONG i = 0; i < cCmds; i++)
+		prgCmds[i].cmdf = OLECMDF_SUPPORTED | OLECMDF_ENABLED;
+	return S_OK;
+
+	return S_OK;
+}
+
+STDMETHODIMP CIPixCOM::Exec(
+	const GUID *pguidCmdGroup, DWORD nCmdID,
+	DWORD nCmdexecopt, VARIANT *pvaIn,
+	VARIANT *pvaOut)
+{
+	if (!CheckConnections())
 	{
-		if( ! prgCmds )
-			return E_POINTER;
-
-		for(ULONG i = 0; i < cCmds;i++)
-			prgCmds[i].cmdf = OLECMDF_SUPPORTED | OLECMDF_ENABLED;	return S_OK;
-
-		return S_OK;
-	}
-
-	STDMETHODIMP CIPixCOM::Exec(
-			const GUID *pguidCmdGroup, DWORD nCmdID,
-			DWORD nCmdexecopt, VARIANT *pvaIn,
-			VARIANT *pvaOut)
-	{
-		if (!CheckConnections())
-		{
-			MessageBox(NULL,
-				_T("Ã»ÓĞ¼ì²âµ½ÍøÂçÁ¬½Ó!\n½âÎöÎŞ·¨¼ÌĞø½øĞĞ!"),
-				_T("INFORMATION"), MB_OK+MB_ICONSTOP);
+		MessageBox(NULL,
+				   _T("æ²¡æœ‰æ£€æµ‹åˆ°ç½‘ç»œè¿æ¥!\nè§£ææ— æ³•ç»§ç»­è¿›è¡Œ!"),
+				   _T("INFORMATION"), MB_OK + MB_ICONSTOP);
 #ifndef DEBUG
-			return S_OK;
+		return S_OK;
 #endif
-		}
+	}
 
-		CString URL;
-		if(!GetBrowserLocation(m_spUnkSite, &URL))
-		{
-			MessageBox(NULL, _T("ÎŞ·¨µÃµ½µ±Ç°ÍøÂçµØÖ·!\nÎŞ·¨½âÎö!"),
-				_T("INFORMATION"), MB_OK+MB_ICONSTOP);
-			return S_OK;
-		}
+	CString URL;
+	if (!GetBrowserLocation(m_spUnkSite, &URL))
+	{
+		MessageBox(NULL, _T("æ— æ³•å¾—åˆ°å½“å‰ç½‘ç»œåœ°å€!\næ— æ³•è§£æ!"),
+				   _T("INFORMATION"), MB_OK + MB_ICONSTOP);
+		return S_OK;
+	}
 
-		CString IP, Server;
-		if(!ParseURL(URL, &IP, &Server))
-		{
-			MessageBox(NULL, _T("ÎŞ·¨½âÎö´Ë URL !\n + URL"),
-				_T("INFORMATION"), MB_OK+MB_ICONSTOP);
-
-			return S_OK;
-		}
-
-		if (IP == "127.0.0.1")
-			Server = "localhost";
-
-		if (!CheckHOST(IP))
-			return S_OK;
-
-		if (!WriteHOST(IP, Server))
-		{
-			MessageBox(NULL,
-				_T("·şÎñÆ÷: " + Server + "\n½âÎö IP Îª: " + IP + "\n\nĞ´Èë±¾µØ HOST ÎÄ¼şÊ§°Ü!"),
-				_T("INFORMATION"), MB_OK+MB_ICONSTOP);
-		}
-		else
-		{
-			//CString strTemp = "·şÎñÆ÷: " + CString(Server) + "\n½âÎö IP Îª: " + IP + "\n\nÒÑ³É¹¦Ğ´Èë±¾µØ HOST ÎÄ¼ş!";
-			MessageBox(NULL,
-				_T("·şÎñÆ÷: " + Server + "\n½âÎö IP Îª: " + IP + "\n\nÒÑ³É¹¦Ğ´Èë±¾µØ HOST ÎÄ¼ş!"),
-				_T("INFORMATION"), MB_OK+MB_ICONINFORMATION);
-		}
+	CString IP, Server;
+	if (!ParseURL(URL, &IP, &Server))
+	{
+		MessageBox(NULL, _T("æ— æ³•è§£ææ­¤ URL !\n + URL"),
+				   _T("INFORMATION"), MB_OK + MB_ICONSTOP);
 
 		return S_OK;
 	}
+
+	if (IP == "127.0.0.1")
+		Server = "localhost";
+
+	if (!CheckHOST(IP))
+		return S_OK;
+
+	if (!WriteHOST(IP, Server))
+	{
+		MessageBox(NULL,
+				   _T("æœåŠ¡å™¨: " + Server + "\nè§£æ IP ä¸º: " + IP + "\n\nå†™å…¥æœ¬åœ° HOST æ–‡ä»¶å¤±è´¥!"),
+				   _T("INFORMATION"), MB_OK + MB_ICONSTOP);
+	}
+	else
+	{
+		//CString strTemp = "æœåŠ¡å™¨: " + CString(Server) + "\nè§£æ IP ä¸º: " + IP + "\n\nå·²æˆåŠŸå†™å…¥æœ¬åœ° HOST æ–‡ä»¶!";
+		MessageBox(NULL,
+				   _T("æœåŠ¡å™¨: " + Server + "\nè§£æ IP ä¸º: " + IP + "\n\nå·²æˆåŠŸå†™å…¥æœ¬åœ° HOST æ–‡ä»¶!"),
+				   _T("INFORMATION"), MB_OK + MB_ICONINFORMATION);
+	}
+
+	return S_OK;
+}
 
 bool CIPixCOM::CheckConnections()
 {
 	HINSTANCE m_hWinInetApi = NULL;
 
-	typedef bool (__stdcall *PFNINTERNETGETCONNECTEDSTATE)(LPDWORD, DWORD);
+	typedef bool(__stdcall * PFNINTERNETGETCONNECTEDSTATE)(LPDWORD, DWORD);
 	PFNINTERNETGETCONNECTEDSTATE m_pfnInternetGetConnectedState = NULL;
 
 	DWORD dwFlags = 0;
@@ -89,12 +90,12 @@ bool CIPixCOM::CheckConnections()
 	m_hWinInetApi = LoadLibrary("WININET.DLL");
 	if (m_hWinInetApi != NULL)
 	{
-		m_pfnInternetGetConnectedState = (PFNINTERNETGETCONNECTEDSTATE) GetProcAddress(m_hWinInetApi, "InternetGetConnectedState");
+		m_pfnInternetGetConnectedState = (PFNINTERNETGETCONNECTEDSTATE)GetProcAddress(m_hWinInetApi, "InternetGetConnectedState");
 		if (!m_pfnInternetGetConnectedState)
 		{
-			MessageBox(NULL, 
-				_T("·ÃÎÊ¶¯Ì¬Á¬½Ó¿âº¯ÊıÊ§°Ü!\n½âÎöÃ»ÓĞ³É¹¦Íê³É!"),
-				_T("INFORMATION"), MB_OK+MB_ICONSTOP);
+			MessageBox(NULL,
+					   _T("è®¿é—®åŠ¨æ€è¿æ¥åº“å‡½æ•°å¤±è´¥!\nè§£ææ²¡æœ‰æˆåŠŸå®Œæˆ!"),
+					   _T("INFORMATION"), MB_OK + MB_ICONSTOP);
 
 			FreeLibrary(m_hWinInetApi);
 			return false;
@@ -114,19 +115,19 @@ bool CIPixCOM::CheckConnections()
 		}
 	}
 
-	MessageBox(NULL, _T("¼ÓÔØ¶¯Ì¬Á¬½Ó¿âÊ§°Ü!\n\n½âÎöÃ»ÓĞ³É¹¦Íê³É!"),
-		_T("INFORMATION"), MB_OK+MB_ICONSTOP);
+	MessageBox(NULL, _T("åŠ è½½åŠ¨æ€è¿æ¥åº“å¤±è´¥!\n\nè§£ææ²¡æœ‰æˆåŠŸå®Œæˆ!"),
+			   _T("INFORMATION"), MB_OK + MB_ICONSTOP);
 	return false;
 }
 
-bool CIPixCOM::GetBrowserLocation(IUnknown* m_spSite, CString* retURL)
+bool CIPixCOM::GetBrowserLocation(IUnknown *m_spSite, CString *retURL)
 {
-	IOleCommandTarget* pCmdTarget = NULL;
-	HRESULT hr = m_spSite->QueryInterface(IID_IOleCommandTarget, (LPVOID*)&pCmdTarget);
+	IOleCommandTarget *pCmdTarget = NULL;
+	HRESULT hr = m_spSite->QueryInterface(IID_IOleCommandTarget, (LPVOID *)&pCmdTarget);
 	if (SUCCEEDED(hr))
 	{
-		IServiceProvider* pSP = NULL;
-		hr = pCmdTarget->QueryInterface(IID_IServiceProvider, (LPVOID*)&pSP);
+		IServiceProvider *pSP = NULL;
+		hr = pCmdTarget->QueryInterface(IID_IServiceProvider, (LPVOID *)&pSP);
 
 		pCmdTarget->Release();
 
@@ -138,26 +139,26 @@ bool CIPixCOM::GetBrowserLocation(IUnknown* m_spSite, CString* retURL)
 				m_spBrowser = NULL;
 			}
 
-			hr = pSP->QueryService(IID_IWebBrowserApp, IID_IWebBrowser2, (LPVOID*)&m_spBrowser);
+			hr = pSP->QueryService(IID_IWebBrowserApp, IID_IWebBrowser2, (LPVOID *)&m_spBrowser);
 			if (FAILED(hr))
 			{
-				MessageBox(NULL, _T("IWebBrowserApp ½Ó¿Ú·ÃÎÊ´íÎó!"),
-					_T("INFORMATION"), MB_OK+MB_ICONSTOP);
+				MessageBox(NULL, _T("IWebBrowserApp æ¥å£è®¿é—®é”™è¯¯!"),
+						   _T("INFORMATION"), MB_OK + MB_ICONSTOP);
 				return false;
 			}
 			pSP->Release();
 		}
 		else
 		{
-			MessageBox(NULL, _T("IServiceProvider ½Ó¿Ú·ÃÎÊ´íÎó!"),
-				_T("INFORMATION"), MB_OK+MB_ICONSTOP);
+			MessageBox(NULL, _T("IServiceProvider æ¥å£è®¿é—®é”™è¯¯!"),
+					   _T("INFORMATION"), MB_OK + MB_ICONSTOP);
 			return false;
 		}
 	}
 	else
 	{
-		MessageBox(NULL, _T("IOleCommandTarget ½Ó¿Ú·ÃÎÊ´íÎó!"),
-			_T("INFORMATION"), MB_OK+MB_ICONSTOP);
+		MessageBox(NULL, _T("IOleCommandTarget æ¥å£è®¿é—®é”™è¯¯!"),
+				   _T("INFORMATION"), MB_OK + MB_ICONSTOP);
 		return false;
 	}
 
@@ -176,27 +177,27 @@ bool CIPixCOM::GetBrowserLocation(IUnknown* m_spSite, CString* retURL)
 	return false;
 }
 
-bool CIPixCOM::ParseURL(CString URL, CString* retIP, CString* retServer)
+bool CIPixCOM::ParseURL(CString URL, CString *retIP, CString *retServer)
 {
 	DWORD dwServiceType;
-	CString strServer,strObject;
+	CString strServer, strObject;
 	unsigned short nPort;
 	if (!AfxParseURL(URL, dwServiceType, strServer, strObject, nPort))
 	{
-		MessageBox(NULL, _T("URL\n" + URL + "\n·Ç·¨!"), 
-			_T("INFORMATION"), MB_OK+MB_ICONSTOP);
+		MessageBox(NULL, _T("URL\n" + URL + "\néæ³•!"),
+				   _T("INFORMATION"), MB_OK + MB_ICONSTOP);
 		return false;
 	}
 
-	HOSTENT* lpHostEnt;
+	HOSTENT *lpHostEnt;
 	lpHostEnt = gethostbyname(strServer);
 	if (!lpHostEnt)
 	{
-		//Ìí¼Ógethostbynameº¯Êı½âÎöÊ§°ÜµÄ´¦Àí
+		//æ·»åŠ gethostbynameå‡½æ•°è§£æå¤±è´¥çš„å¤„ç†
 		return false;
 	}
 	*retIP = (CString)
-		inet_ntoa(*(LPIN_ADDR)*(lpHostEnt->h_addr_list));
+		inet_ntoa(*(LPIN_ADDR) * (lpHostEnt->h_addr_list));
 	*retServer = strServer;
 	return true;
 }
@@ -204,22 +205,22 @@ bool CIPixCOM::ParseURL(CString URL, CString* retIP, CString* retServer)
 bool CIPixCOM::CheckHOST(CString strIP)
 {
 	char pHostPath[_MAX_PATH];
-	GetWindowsDirectory(pHostPath,_MAX_PATH);
-	strcat( pHostPath, "\\hosts" );
+	GetWindowsDirectory(pHostPath, _MAX_PATH);
+	strcat(pHostPath, "\\hosts");
 
 	fstream fs(pHostPath,
-			ios::ate | ios::in | ios::nocreate,
-			filebuf::sh_read);
+			   ios::ate | ios::in | ios::nocreate,
+			   filebuf::sh_read);
 	if (!fs.is_open())
 	{
 		fs.open(pHostPath,
-			ios::ate | ios::in | ios::out | ios::noreplace,
-			filebuf::sh_read);
+				ios::ate | ios::in | ios::out | ios::noreplace,
+				filebuf::sh_read);
 		if (!fs.is_open())
 		{
 			MessageBox(NULL,
-				_T("HOST ÎÄ¼ş´ò¿ªÊ§°Ü!"),
-				_T("INFORMATION"), MB_OK+MB_ICONSTOP);
+					   _T("HOST æ–‡ä»¶æ‰“å¼€å¤±è´¥!"),
+					   _T("INFORMATION"), MB_OK + MB_ICONSTOP);
 
 			return false;
 		}
@@ -230,15 +231,15 @@ bool CIPixCOM::CheckHOST(CString strIP)
 	{
 		char buf[1024];
 		fs.getline(buf, 1023);
-		if(strstr( buf, strIP))
+		if (strstr(buf, strIP))
 		{
 			if (IDYES == MessageBox(NULL,
-				_T("IPÒÑ´æÔÚÓÚ±¾µØDNSÏµÍ³!\nÊÇ·ñĞèÒªÖØĞÂ½âÎö?"),
-				_T("ÌáÊ¾"),
-				MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON1 | MB_TASKMODAL))
+									_T("IPå·²å­˜åœ¨äºæœ¬åœ°DNSç³»ç»Ÿ!\næ˜¯å¦éœ€è¦é‡æ–°è§£æ?"),
+									_T("æç¤º"),
+									MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON1 | MB_TASKMODAL))
 			{
-				//É¾³ı´ËĞĞbuf
-				AfxMessageBox(_T("¶Ô²»Æğ, ´ËÄ£¿éÎ´Íê³É!\n½«²»»áÖØĞÂ½âÎö!"));
+				//åˆ é™¤æ­¤è¡Œbuf
+				AfxMessageBox(_T("å¯¹ä¸èµ·, æ­¤æ¨¡å—æœªå®Œæˆ!\nå°†ä¸ä¼šé‡æ–°è§£æ!"));
 			}
 
 			fs.close();
@@ -253,27 +254,28 @@ bool CIPixCOM::CheckHOST(CString strIP)
 bool CIPixCOM::WriteHOST(CString strIP, CString strServer)
 {
 	char lpPath[_MAX_PATH];
-	GetWindowsDirectory(lpPath,_MAX_PATH);
-	strcat( lpPath, "\\hosts" );
+	GetWindowsDirectory(lpPath, _MAX_PATH);
+	strcat(lpPath, "\\hosts");
 
 	ofstream ofs(lpPath,
-		ios::app | ios::out | ios::nocreate,
-		filebuf::sh_read);
+				 ios::app | ios::out | ios::nocreate,
+				 filebuf::sh_read);
 	if (!ofs.is_open())
 	{
 		ofs.open(lpPath,
-			ios::app | ios::out | ios::noreplace,
-			filebuf::sh_read);
+				 ios::app | ios::out | ios::noreplace,
+				 filebuf::sh_read);
 		if (!ofs.is_open())
 		{
 			MessageBox(NULL,
-				_T("HOST ÎÄ¼ş´ò¿ªÊ§°Ü!"),
-				_T("INFORMATION"), MB_OK+MB_ICONSTOP);
+					   _T("HOST æ–‡ä»¶æ‰“å¼€å¤±è´¥!"),
+					   _T("INFORMATION"), MB_OK + MB_ICONSTOP);
 
 			return false;
 		}
 	}
-	ofs << "\n" << strIP << " " << strServer;
+	ofs << "\n"
+		<< strIP << " " << strServer;
 	ofs.close();
 	return true;
 }

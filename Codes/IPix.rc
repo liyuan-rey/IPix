@@ -115,7 +115,7 @@ IDI_ICONGRAY            ICON    DISCARDABLE     "res\\anaki1616g.ico"
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDS_PROJNAME            "IPix"
-    IDP_SOCKETS_INIT_FAILED "Windows ͨ�Ŷ˿ڳ�ʼ��ʧ�ܡ�"
+    IDP_SOCKETS_INIT_FAILED "Windows 通信端口初始化失败。"
 END
 
 #endif    // Chinese (P.R.C.) resources
